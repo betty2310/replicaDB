@@ -1,0 +1,4 @@
+[mysqld]
+bind-address = 0.0.0.0
+log_bin         = slave-bin
+server-id       = 2

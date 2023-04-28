@@ -1,0 +1,67 @@
+version: '3'
+
+services:
+  mariadb-master:
+    container_name: mariadb-master
+    image: mariadb:latest
+    restart: unless-stopped
+    volumes:
+      - './db_master_data:/var/lib/mysql'
+      - './master.cnf:/etc/mysql/conf.d/mysql.cnf'
+    environment:
+      MARIADB_ROOT_PASSWORD: 1 
+      MAXSCALE_SERVICE_NAME: replication-service
+      MAXSCALE_USERNAME: maxuser
+      MAXSCALE_PASSWORD: maxpwd
+    ports:
+      - "3306:3306"
+    networks:
+      - db-stack
+    mem_limit: 2G
+    command: ["--maxscale", "--maxscale-host=maxscale"]
+    labels:
+      app.docker.created: "Betty"
+      app.docker.env: "production"
+      app.docker.service: "database"
+
+  mariadb-slave:
+    container_name: mariadb-slave
+    image: mariadb:latest
+    restart: unless-stopped
+    volumes:
+      - './db_slave_data:/var/lib/mysql'
+      - './slave.cnf:/etc/mysql/conf.d/mysql.cnf'
+    command: ["--maxscale", "--maxscale-host=maxscale"]
+    environment:
+      MARIADB_ROOT_PASSWORD: 1 
+      MAXSCALE_SERVICE_NAME: replication-service
+      MAXSCALE_USERNAME: maxuser
+      MAXSCALE_PASSWORD: maxpwd
+    ports:
+      - "3307:3306"
+    networks:
+      - db-stack
+    mem_limit: 2G
+    labels:
+      app.docker.created: "Betty"
+      app.docker.env: "production"
+      app.docker.service: "database"
+  maxscale:
+    container_name: maxscale
+    image: mariadb/maxscale:latest
+    volumes:
+      - './maxscale.cnf:/etc/maxscale.cnf'
+    ports:
+      - "4006:4006"
+    networks:
+      - db-stack
+    labels:
+      app.docker.created: "Betty"
+      app.docker.env: "production"
+      app.docker.service: "maxscale"
+networks:
+  db-stack:
+    name: db-stack
+    driver: bridge
+    external: true
+

@@ -1,0 +1,22 @@
+[maxscale]
+threads=auto
+
+[server1]
+type=server
+address=mariadb-master
+port=3306
+protocol=MariaDBBackend
+
+[server2]
+type=server
+address=mariadb-slave
+port=3307
+protocol=MariaDBBackend
+
+[replication-service]
+type=service
+router=readwritesplit
+servers=server1, server2
+user=maxuser
+password=maxpwd
+enable_root_user=true
