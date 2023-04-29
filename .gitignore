@@ -1,2 +1,3 @@
-./db_master_data/**
-./db_slave_data/**
+db_master_data/
+db_slave_data/
+db_data/

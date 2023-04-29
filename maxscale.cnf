@@ -1,5 +1,17 @@
+#########################
+## MaxScale configuration
+#########################
+
 [maxscale]
-threads=auto
+threads                 = auto
+log_augmentation        = 1
+ms_timestamp            = 1
+syslog                  = 1
+
+
+########################
+## Server list
+########################
 
 [server1]
 type=server
@@ -10,13 +22,18 @@ protocol=MariaDBBackend
 [server2]
 type=server
 address=mariadb-slave
-port=3307
+port=3306
 protocol=MariaDBBackend
 
-[replication-service]
-type=service
-router=readwritesplit
-servers=server1, server2
-user=maxuser
-password=maxpwd
-enable_root_user=true
+#########################
+# Monitor for the servers
+#########################
+
+[monitor]
+type                    = monitor
+module                  = mariadbmon
+servers                 = server1,server2
+user                    = maxscale
+password                = maxscale
+auto_failover           = true
+auto_rejoin             = true
